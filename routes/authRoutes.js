@@ -75,7 +75,7 @@ router.post('/login', async (req, res, next) => {
 });
 
 router.get('/secret-route', isLoggedIn, (req, res, next) => {
-  res.send('This is the secret content. Only logged in users can see that!');
+  return res.status(200).json('ITS OK!');
 });
 
 module.exports = router;

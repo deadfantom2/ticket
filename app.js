@@ -1,5 +1,7 @@
 const express = require('express');
 const path = require('path');
+const bodyParser = require('body-parser');
+// const routes = require('./routes/routes');
 require('dotenv').config();
 
 // Init express
@@ -24,10 +26,16 @@ app.use((req, res, next) => {
 
 // Middlewares
 app.disable('x-powered-by');
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse application/json
+app.use(bodyParser.json());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.static(__dirname + '/'));
 
 // Routes
+app.use('/api/auth', require('./routes/authRoutes'));
 
 module.exports = app;

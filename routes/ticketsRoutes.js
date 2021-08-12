@@ -6,17 +6,17 @@ require('dotenv').config();
 const { configDB } = require('../config/db-auth');
 const util = require('util');
 const {
-  validateRegister,
+  checkYourTicketPemisison,
   isLoggedIn,
 } = require('../middlewares/usersMiddlewares');
-const { encodingPassword, comparePassword } = require('../utils/user-encoding');
 
 const conn = mysql.createConnection(configDB);
 
 // node native promisify
 const query = util.promisify(conn.query).bind(conn);
 
-router.post('/add', isLoggedIn, async (req, res, next) => {
+// Add ticket
+router.post('/add', isLoggedIn, async (req, res) => {
   console.log(req.userData.userId);
   try {
     await query(
@@ -33,5 +33,43 @@ router.post('/add', isLoggedIn, async (req, res, next) => {
     return res.status(500).json({ message: 'Something is wrong!' });
   }
 });
+
+// Modify ticket
+router.put(
+  '/modify-ticket/:id',
+  [isLoggedIn, checkYourTicketPemisison],
+  async (req, res) => {
+    const ticketId = req.params.id;
+    try {
+      await query(
+        `UPDATE tickets SET titre= ${db.escape(
+          req.body.titre
+        )}, description=${db.escape(req.body.description)}, status=${db.escape(
+          req.body.status
+        )}  WHERE id = ${db.escape(ticketId)}`
+      );
+      return res.status(201).json({ message: 'Ticket modified!' });
+    } catch (error) {
+      console.log('error: ', error);
+      return res.status(500).json({ message: 'Something is wrong!' });
+    }
+  }
+);
+
+// Delete ticket
+router.delete(
+  '/delete-ticket/:id',
+  [isLoggedIn, checkYourTicketPemisison],
+  async (req, res) => {
+    const ticketId = req.params.id;
+    try {
+      await query(`DELETE FROM tickets WHERE id = ${db.escape(ticketId)}`);
+      return res.status(201).json({ message: 'Ticket deleted!' });
+    } catch (error) {
+      console.log('error: ', error);
+      return res.status(500).json({ message: 'Something is wrong!' });
+    }
+  }
+);
 
 module.exports = router;

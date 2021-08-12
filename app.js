@@ -37,5 +37,6 @@ app.use(express.static(__dirname + '/'));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/tickets', require('./routes/ticketsRoutes'));
 
 module.exports = app;

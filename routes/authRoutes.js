@@ -4,6 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../config/db.config');
+require('dotenv').config();
 const { configDB } = require('../config/db-auth');
 const util = require('util');
 const {
@@ -41,36 +42,41 @@ router.post('/register', validateRegister, async (req, res, next) => {
     }
   } catch (error) {
     console.log('error: ', error);
+    return res.status(500).json({ message: 'Something is wrong!' });
   }
 });
 
 router.post('/login', async (req, res, next) => {
-  const userInfo = await query(
-    `SELECT * FROM users WHERE email = ${db.escape(req.body.email)};`
-  );
-
-  if (!userInfo.length) {
-    return res.status(400).json({ message: 'User not found' });
-  } else if (
-    !(await comparePassword(req.body.password, userInfo[0].password))
-  ) {
-    return res.status(400).json({ message: 'Password is incorrect' });
-  } else {
-    const token = jwt.sign(
-      {
-        userId: userInfo[0].id,
-        email: userInfo[0].email,
-      },
-      'SECRETKEY',
-      {
-        expiresIn: '7d',
-      }
+  try {
+    const userInfo = await query(
+      `SELECT * FROM users WHERE email = ${db.escape(req.body.email)};`
     );
-    return res.status(200).json({
-      msg: 'Logged in!',
-      token,
-      user: { id: userInfo[0].id, email: userInfo[0].email },
-    });
+    if (!userInfo.length) {
+      return res.status(400).json({ message: 'User not found' });
+    } else if (
+      !(await comparePassword(req.body.password, userInfo[0].password))
+    ) {
+      return res.status(400).json({ message: 'Password is incorrect' });
+    } else {
+      const token = jwt.sign(
+        {
+          userId: userInfo[0].id,
+          email: userInfo[0].email,
+        },
+        process.env.SECRET_KEY,
+        {
+          expiresIn: '7d',
+        }
+      );
+      return res.status(200).json({
+        msg: 'Logged in!',
+        token,
+        user: { email: userInfo[0].email },
+      });
+    }
+  } catch (error) {
+    console.log('error: ', error);
+    return res.status(500).json({ message: 'Something is wrong!' });
   }
 });
 

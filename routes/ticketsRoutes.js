@@ -6,8 +6,8 @@ require('dotenv').config();
 const { configDB } = require('../config/db-auth');
 const util = require('util');
 const {
-  checkYourTicketPemisison,
   isLoggedIn,
+  checkYourTicketPemisison,
 } = require('../middlewares/usersMiddlewares');
 
 const conn = mysql.createConnection(configDB);

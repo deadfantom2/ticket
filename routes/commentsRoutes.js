@@ -6,8 +6,8 @@ require('dotenv').config();
 const { configDB } = require('../config/db-auth');
 const util = require('util');
 const {
-  checkYourTicketPemisison,
   isLoggedIn,
+  checkYourCommentPemisison,
 } = require('../middlewares/usersMiddlewares');
 
 const conn = mysql.createConnection(configDB);
@@ -36,18 +36,16 @@ router.post('/add', isLoggedIn, async (req, res) => {
 // Modify comment
 router.put(
   '/modify-comment/:id',
-  [isLoggedIn, checkYourTicketPemisison],
+  [isLoggedIn, checkYourCommentPemisison],
   async (req, res) => {
-    const ticketId = req.params.id;
+    const commentId = req.params.id;
     try {
       await query(
-        `UPDATE tickets SET titre= ${db.escape(
-          req.body.titre
-        )}, description=${db.escape(req.body.description)}, status=${db.escape(
-          req.body.status
-        )}  WHERE id = ${db.escape(ticketId)}`
+        `UPDATE comments SET description= ${db.escape(
+          req.body.description
+        )} WHERE id = ${db.escape(commentId)}`
       );
-      return res.status(201).json({ message: 'Ticket modified!' });
+      return res.status(201).json({ message: 'Comment modified!' });
     } catch (error) {
       console.log('error: ', error);
       return res.status(500).json({ message: 'Something is wrong!' });
@@ -57,13 +55,13 @@ router.put(
 
 // Delete comment
 router.delete(
-  '/delete-ticket/:id',
-  [isLoggedIn, checkYourTicketPemisison],
+  '/delete-comment/:id',
+  [isLoggedIn, checkYourCommentPemisison],
   async (req, res) => {
-    const ticketId = req.params.id;
+    const commentId = req.params.id;
     try {
-      await query(`DELETE FROM tickets WHERE id = ${db.escape(ticketId)}`);
-      return res.status(201).json({ message: 'Ticket deleted!' });
+      await query(`DELETE FROM comments WHERE id = ${db.escape(commentId)}`);
+      return res.status(201).json({ message: 'Comment deleted!' });
     } catch (error) {
       console.log('error: ', error);
       return res.status(500).json({ message: 'Something is wrong!' });

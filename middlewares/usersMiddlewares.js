@@ -50,6 +50,7 @@ exports.isLoggedIn = (req, res, next) => {
   }
 };
 
+/**TODO: refactoring 2 functions */
 // Check if you can edit/delete your ticket or modify
 exports.checkYourTicketPemisison = async (req, res, next) => {
   try {
@@ -62,6 +63,32 @@ exports.checkYourTicketPemisison = async (req, res, next) => {
         userId
       )});`
     );
+    if (result.length) {
+      next();
+    } else {
+      return res
+        .status(403)
+        .json({ message: `You can do it, only for your tickets!` });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: 'Something is wrong!' });
+  }
+};
+
+// Check if you can edit/delete your ticket or modify
+exports.checkYourCommentPemisison = async (req, res, next) => {
+  try {
+    const { userId } = jwt.verify(
+      req.headers.authorization.split(' ')[1],
+      process.env.SECRET_KEY
+    );
+    console.log(userId);
+    const result = await query(
+      `SELECT * FROM comments WHERE LOWER(user_id) = LOWER(${db.escape(
+        userId
+      )});`
+    );
+    console.log(result);
     if (result.length) {
       next();
     } else {

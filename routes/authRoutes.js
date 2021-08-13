@@ -58,7 +58,7 @@ router.post('/login', async (req, res, next) => {
     ) {
       return res.status(400).json({ message: 'Password is incorrect' });
     } else {
-      const token = jwt.sign(
+      const token = await jwt.sign(
         {
           userId: userInfo[0].id,
           email: userInfo[0].email,
@@ -78,10 +78,6 @@ router.post('/login', async (req, res, next) => {
     console.log('error: ', error);
     return res.status(500).json({ message: 'Something is wrong!' });
   }
-});
-
-router.get('/secret-route', isLoggedIn, (req, res, next) => {
-  return res.status(200).json('ITS OK!');
 });
 
 module.exports = router;

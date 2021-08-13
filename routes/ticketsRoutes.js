@@ -8,6 +8,7 @@ const util = require('util');
 const {
   isLoggedIn,
   checkYourTicketPemisison,
+  validateTicket,
 } = require('../middlewares/usersMiddlewares');
 
 const conn = mysql.createConnection(configDB);
@@ -15,8 +16,31 @@ const conn = mysql.createConnection(configDB);
 // node native promisify
 const query = util.promisify(conn.query).bind(conn);
 
+// GET All tickets
+router.get('/', isLoggedIn, async (req, res) => {
+  try {
+    const tickets = await query(`SELECT * FROM tickets`);
+    return res.status(201).json({ tickets: tickets });
+  } catch (error) {
+    console.log('error: ', error);
+    return res.status(500).json({ message: 'Something is wrong!' });
+  }
+});
+
+// GET ticket by ID
+router.get('/:id', isLoggedIn, async (req, res) => {
+  const ticketId = req.params.id;
+  try {
+    const ticket = await query(`SELECT * FROM tickets WHERE id = ${ticketId}`);
+    return res.status(201).json({ ticket: ticket });
+  } catch (error) {
+    console.log('error: ', error);
+    return res.status(500).json({ message: 'Something is wrong!' });
+  }
+});
+
 // Add ticket
-router.post('/add', isLoggedIn, async (req, res) => {
+router.post('/add', [isLoggedIn, validateTicket], async (req, res) => {
   console.log(req.userData.userId);
   try {
     await query(

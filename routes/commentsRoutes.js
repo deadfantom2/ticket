@@ -15,9 +15,23 @@ const conn = mysql.createConnection(configDB);
 // node native promisify
 const query = util.promisify(conn.query).bind(conn);
 
+// GET comments from ticket by ID
+router.get('/:id', isLoggedIn, async (req, res) => {
+  const commentId = req.params.id;
+  try {
+    const comments = await query(
+      `SELECT *
+      FROM comments WHERE ticket_id= ${commentId}`
+    );
+    return res.status(201).json({ comments: comments });
+  } catch (error) {
+    console.log('error: ', error);
+    return res.status(500).json({ message: 'Something is wrong!' });
+  }
+});
+
 // Add comment
 router.post('/add', isLoggedIn, async (req, res) => {
-  console.log(req.userData.userId);
   try {
     await query(
       `INSERT INTO comments (user_id, ticket_id, description) VALUES (

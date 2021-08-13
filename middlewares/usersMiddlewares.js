@@ -36,6 +36,20 @@ exports.validateRegister = (req, res, next) => {
   next();
 };
 
+// Ticket validation
+exports.validateTicket = (req, res, next) => {
+  const status = ['todo', 'wip', 'done'];
+  // name min length 3
+  console.log(req.body.status);
+  console.log(status.indexOf(req.body.status));
+
+  if (status.indexOf(req.body.status) < 0) {
+    res.status(400).json({ message: 'Bad status code' });
+  } else {
+    next();
+  }
+};
+
 // Check if you are authenticate
 exports.isLoggedIn = (req, res, next) => {
   try {
@@ -50,7 +64,6 @@ exports.isLoggedIn = (req, res, next) => {
   }
 };
 
-/**TODO: refactoring 2 functions */
 // Check if you can edit/delete your ticket or modify
 exports.checkYourTicketPemisison = async (req, res, next) => {
   try {
@@ -75,7 +88,7 @@ exports.checkYourTicketPemisison = async (req, res, next) => {
   }
 };
 
-// Check if you can edit/delete your ticket or modify
+// Check if you can edit/delete your comment or modify
 exports.checkYourCommentPemisison = async (req, res, next) => {
   try {
     const { userId } = jwt.verify(

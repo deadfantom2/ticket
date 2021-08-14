@@ -7,7 +7,7 @@
   "scripts": {
     "node": "node ./bin/www",
     "nodemon": "nodemon ./bin/www",
-    "test": "mocha --timeout 10000"
+    "test": "mocha -w --timeout 10000"
   },
   "author": "Valentyn",
   "license": "ISC",

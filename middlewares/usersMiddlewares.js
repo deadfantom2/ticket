@@ -36,13 +36,25 @@ exports.validateRegister = (req, res, next) => {
   next();
 };
 
+// Ticket validation keys is required
+exports.validateTicketRequired = (req, res, next) => {
+  const keysBodyTicket = Object.keys(req.body);
+  if (
+    keysBodyTicket.indexOf('titre') < 0 ||
+    keysBodyTicket.indexOf('description') < 0 ||
+    keysBodyTicket.indexOf('status') < 0
+  ) {
+    res.status(400).json({
+      message: 'Titre or description or status is required',
+    });
+  } else {
+    next();
+  }
+};
+
 // Ticket validation
 exports.validateTicket = (req, res, next) => {
   const status = ['todo', 'wip', 'done'];
-  // name min length 3
-  console.log(req.body.status);
-  console.log(status.indexOf(req.body.status));
-
   if (status.indexOf(req.body.status) < 0) {
     res.status(400).json({ message: 'Bad status code' });
   } else {
@@ -95,7 +107,6 @@ exports.checkYourCommentPemisison = async (req, res, next) => {
       req.headers.authorization.split(' ')[1],
       process.env.SECRET_KEY
     );
-    console.log(userId);
     const result = await query(
       `SELECT * FROM comments WHERE LOWER(user_id) = LOWER(${db.escape(
         userId

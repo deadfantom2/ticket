@@ -9,6 +9,7 @@ const {
   isLoggedIn,
   checkYourTicketPemisison,
   validateTicket,
+  validateTicketRequired,
 } = require('../middlewares/usersMiddlewares');
 
 const conn = mysql.createConnection(configDB);
@@ -40,28 +41,31 @@ router.get('/:id', isLoggedIn, async (req, res) => {
 });
 
 // Add ticket
-router.post('/add', [isLoggedIn, validateTicket], async (req, res) => {
-  console.log(req.userData.userId);
-  try {
-    await query(
-      `INSERT INTO tickets (user_id, titre, description, status) VALUES (
+router.post(
+  '/add',
+  [isLoggedIn, validateTicketRequired, validateTicket],
+  async (req, res) => {
+    try {
+      await query(
+        `INSERT INTO tickets (user_id, titre, description, status) VALUES (
             ${db.escape(req.userData.userId)},
             ${db.escape(req.body.titre)},
             ${db.escape(req.body.description)},
             ${db.escape(req.body.status)}
             )`
-    );
-    return res.status(201).json({ message: 'Ticket created!' });
-  } catch (error) {
-    console.log('error: ', error);
-    return res.status(500).json({ message: 'Something is wrong!' });
+      );
+      return res.status(201).json({ message: 'Ticket created!' });
+    } catch (error) {
+      console.log('error: ', error);
+      return res.status(500).json({ message: 'Something is wrong!' });
+    }
   }
-});
+);
 
 // Modify ticket
 router.put(
   '/modify-ticket/:id',
-  [isLoggedIn, checkYourTicketPemisison],
+  [isLoggedIn, checkYourTicketPemisison, validateTicketRequired],
   async (req, res) => {
     const ticketId = req.params.id;
     try {

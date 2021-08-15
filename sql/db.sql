@@ -22,15 +22,15 @@ DROP TABLE IF EXISTS `tickets`.`tickets` ;
 CREATE TABLE IF NOT EXISTS `tickets`.`tickets` (
   `id` INT(70) NOT NULL AUTO_INCREMENT,
   `user_id` INT(70) NOT NULL,
-  `titre` VARCHAR(42555) NULL,
+  `titre` VARCHAR(255) NULL,
   `description` VARCHAR(255) NULL,
   `status` VARCHAR(255) NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `tickets_foreign_key`
     FOREIGN KEY (`user_id`)
     REFERENCES `tickets`.`users` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `tickets`.`comments`
@@ -47,8 +47,8 @@ CREATE TABLE IF NOT EXISTS `tickets`.`comments` (
     REFERENCES `tickets`.`users` (`id`),
     FOREIGN KEY (`ticket_id`)
     REFERENCES `tickets`.`tickets` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

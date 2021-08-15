@@ -8,6 +8,7 @@ const util = require('util');
 const {
   isLoggedIn,
   checkYourCommentPemisison,
+  validateCommentRequired,
 } = require('../middlewares/usersMiddlewares');
 
 const conn = mysql.createConnection(configDB);
@@ -31,7 +32,7 @@ router.get('/:id', isLoggedIn, async (req, res) => {
 });
 
 // Add comment
-router.post('/add', isLoggedIn, async (req, res) => {
+router.post('/add', [isLoggedIn, validateCommentRequired], async (req, res) => {
   try {
     await query(
       `INSERT INTO comments (user_id, ticket_id, description) VALUES (
@@ -50,7 +51,7 @@ router.post('/add', isLoggedIn, async (req, res) => {
 // Modify comment
 router.put(
   '/modify-comment/:id',
-  [isLoggedIn, checkYourCommentPemisison],
+  [isLoggedIn, checkYourCommentPemisison, validateCommentRequired],
   async (req, res) => {
     const commentId = req.params.id;
     try {

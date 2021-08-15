@@ -52,6 +52,21 @@ exports.validateTicketRequired = (req, res, next) => {
   }
 };
 
+// Comment validation keys is required
+exports.validateCommentRequired = (req, res, next) => {
+  const keysBodyComment = Object.keys(req.body);
+  if (
+    keysBodyComment.indexOf('ticket_id') < 0 ||
+    keysBodyComment.indexOf('description') < 0
+  ) {
+    res.status(400).json({
+      message: 'Ticket or description is required',
+    });
+  } else {
+    next();
+  }
+};
+
 // Ticket validation
 exports.validateTicket = (req, res, next) => {
   const status = ['todo', 'wip', 'done'];
@@ -112,7 +127,6 @@ exports.checkYourCommentPemisison = async (req, res, next) => {
         userId
       )});`
     );
-    console.log(result);
     if (result.length) {
       next();
     } else {

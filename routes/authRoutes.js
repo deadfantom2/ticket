@@ -69,7 +69,7 @@ router.post('/login', async (req, res, next) => {
         }
       );
       return res.status(200).json({
-        msg: 'Logged in!',
+        message: 'Logged in!',
         token,
         user: { email: userInfo[0].email },
       });
